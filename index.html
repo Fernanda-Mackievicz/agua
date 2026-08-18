@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Água, cada gota conta</title>
+    
+    <!-- 
+    ==========================================
+    FONTES E ÍCONES
+    ========================================== 
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 
+    ==========================================
+    CHART.JS (Gráficos Matemáticos)
+    ========================================== 
+    -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* 
+        ==========================================================================
+        1. VARIÁVEIS DE TEMA E CORES (ÁGUA)
+        ========================================================================== 
+        */
+        :root {
+            --bg-color: #e0f2fe; 
+            --text-color: #0c4a6e; 
+            --card-bg: #ffffff;
+            --primary-color: #0284c7; 
+            --primary-hover: #0369a1;
+            --secondary-color: #38bdf8;
+            --accent-color: #0ea5e9;
+            --border-color: #bae6fd;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --shadow-light: rgba(2, 132, 199, 0.1);
+            --shadow-hover: rgba(2, 132, 199, 0.2);
+            --gradient-header: linear-gradient(135deg, #0284c7 0%, #00b4d8 100%);
+            
+            --container-width: 1200px;
+            --border-radius: 16px;
+            --transition-speed: 0.3s;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #082f49;
+            --text-color: #f0f9ff;
+            --card-bg: #0c4a6e;
+            --primary-color: #38bdf8;
+            --primary-hover: #7dd3fc;
+            --secondary-color: #0ea5e9;
+            --accent-color: #0284c7;
+            --border-color: #0369a1;
+            --shadow-light: rgba(0, 0, 0, 0.3);
+            --shadow-hover: rgba(0, 0, 0, 0.5);
+            --gradient-header: linear-gradient(135deg, #082f49 0%, #0369a1 100%);
+        }
+
+        /* 
+        ==========================================================================
+        2. RESET E ESTILOS GERAIS
+        ========================================================================== 
+        */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+        }
+
+        a { 
+            text-decoration: none; 
+            color: var(--primary-color); 
+        }
+
+        ul { 
+            list-style: none; 
+        }
+        
+        /* 
+        ==========================================================================
+        3. CABEÇALHO E MENU
+        ========================================================================== 
+        */
+        header {
+            background: var(--gradient-header);
+            color: #ffffff;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-container {
+            max-width: var(--container-width);
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: #ffffff;
+            color: var(--primary-color);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            font-weight: 600;
+        }
+
+        .theme-toggle {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            outline: none;
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(30deg) scale(1.1);
+        }
+
+        /* 
+        ==========================================================================
+        4. ESTRUTURA PRINCIPAL
+        ========================================================================== 
+        */
+        main {
+            max-width: var(--container-width);
+            margin: 3rem auto;
+            padding: 0 2rem;
+            min-height: 75vh;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(15px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3.5rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.8rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-header h2::after {
+            content: '';
+            position: absolute;
+            width: 60%;
+            height: 4px;
+            background: var(--secondary-color);
+            bottom: -8px;
+            left: 20%;
+            border-radius: 2px;
+        }
+
+        .section-header p {
+            font-size: 1.15rem;
+            opacity: 0.85;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 2.5rem;
+        }
+
+        /* 
+        ==========================================================================
+        5. ABA: INTRODUÇÃO
+        ========================================================================== 
+        */
+        .hero-section {
+            display: flex;
+            align-items: center;
+            gap: 4rem;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 4rem;
+            box-shadow: 0 10px 30px var(--shadow-light);
+            border: 1px solid var(--border-color);
+        }
+        
+        .hero-text { 
+            flex: 1.2; 
+        }
+
+        .hero-text h3 { 
+            font-size: 2.2rem; 
+            color: var(--primary-color); 
+            margin-bottom: 1.5rem; 
+        }
+
+        .hero-text p { 
+            font-size: 1.1rem; 
+            margin-bottom: 1.5rem; 
+            text-align: justify; 
+            line-height: 1.8; 
+        }
+        
+        .hero-image { 
+            flex: 1; 
+            text-align: center; 
+            position: relative; 
+        }
+
+        .hero-image img {
+            width: 100%;
+            border-radius: var(--border-radius);
+            box-shadow: 0 15px 25px var(--shadow-light);
+            animation: float 5s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { 
+                transform: translateY(0px); 
+            }
+            50% { 
+                transform: translateY(-15px); 
+            }
+            100% { 
+                transform: translateY(0px); 
+            }
+        }
+
+        .info-panel {
+            background: rgba(2, 132, 199, 0.05);
+            border-left: 5px solid var(--primary-color);
+            padding: 2rem;
+            margin-top: 2rem;
+            border-radius: 0 12px 12px 0;
+        }
+
+        /* 
+        ==========================================================================
+        6. ABA: MATEMÁTICA (Gráficos Mapeamento)
+        ========================================================================== 
+        */
+        .chart-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: 0 8px 25px var(--shadow-light);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            transition: transform 0.3s;
+        }
+        
+        .chart-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px var(--shadow-hover);
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 280px;
+            position: relative;
+        }
+        
+        .chart-info h4 { 
+            color: var(--primary-color); 
+            font-size: 1.3rem; 
+            margin-bottom: 0.8rem; 
+        }
+
+        .chart-info p { 
+            font-size: 0.95rem; 
+            margin-bottom: 1.2rem; 
+            text-align: justify; 
+            line-height: 1.6; 
+        }
+        
+        .solution-box {
+            background: var(--bg-color);
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary-color);
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .solution-box strong { 
+            color: var(--primary-color); 
+            display: block; 
+            margin-bottom: 8px; 
+            font-size: 1.05rem; 
+        }
+
+        /* 
+        ==========================================================================
+        ESTILOS DE GALERIA ADICIONADOS PARA AS NOVAS IMAGENS
+        ========================================================================== 
+        */
+        .custom-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .custom-gallery-item {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .custom-gallery-item:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 25px var(--shadow-hover);
+        }
+
+        .custom-gallery-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .custom-gallery-caption {
+            padding: 1rem;
+            background: var(--card-bg);
+            font-size: 0.95rem;
+            color: var(--text-color);
+            text-align: center;
+            font-weight: 600;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .reflection-container {
+            background: var(--card-bg);
+            padding: 3rem;
+            border-radius: var(--border-radius);
+            margin-top: 4rem;
+            box-shadow: 0 10px 30px var(--shadow-light);
+            border: 1px solid var(--border-color);
+        }
+
+        /* 
+        ==========================================================================
+        7. ABA: BIOLOGIA
+        ========================================================================== 
+        */
+        .bio-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 2.5rem;
+            box-shadow: 0 8px 25px var(--shadow-light);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bio-card::before {
+            content: '';
+            position: absolute;
+            top: 0; 
+            left: 0;
+            width: 100%; 
+            height: 5px;
+            background: var(--success-color);
+        }
+
+        .bio-card:hover { 
+            transform: translateY(-5px); 
+        }
+
+        .bio-icon {
+            font-size: 3.5rem;
+            color: var(--success-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .bio-card h4 { 
+            font-size: 1.5rem; 
+            margin-bottom: 1rem; 
+            color: var(--text-color); 
+        }
+
+        .bio-card p { 
+            font-size: 1rem; 
+            text-align: justify; 
+            margin-bottom: 1.5rem; 
+            line-height: 1.7; 
+        }
+        
+        .bio-card ul { 
+            padding-left: 1rem; 
+            margin-bottom: 1.5rem; 
+        }
+
+        .bio-card ul li { 
+            position: relative; 
+            margin-bottom: 0.8rem; 
+            font-size: 0.95rem; 
+            padding-left: 1.8rem; 
+            line-height: 1.5;
+        }
+
+        .bio-card ul li::before {
+            content: '\f06c'; 
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: var(--success-color);
+        }
+
+        .bio-impact {
+            background: rgba(16, 185, 129, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--success-color);
+        }
+
+        /* 
+        ==========================================================================
+        8. ABA: QUÍMICA (Múltiplos Vídeos e Etapas)
+        ========================================================================== 
+        */
+        .video-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .video-wrapper {
+            background: var(--card-bg);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 15px 30px var(--shadow-light);
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .video-wrapper h4 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; 
+            height: 0;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0; 
+            left: 0;
+            width: 100%; 
+            height: 100%;
+            border: none;
+        }
+        
+        .chem-process { 
+            margin-top: 1.5rem; 
+        }
+
+        .chem-step {
+            display: flex;
+            align-items: flex-start;
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            border-left: 6px solid var(--primary-color);
+            box-shadow: 0 4px 15px var(--shadow-light);
+            transition: transform 0.3s;
+        }
+        
+        .chem-step:hover { 
+            transform: translateX(10px); 
+        }
+        
+        .chem-step-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-right: 1.5rem;
+            opacity: 0.3;
+            line-height: 1;
+        }
+        
+        .chem-step-info { 
+            flex: 1; 
+        }
+
+        .chem-step-info h4 { 
+            margin-bottom: 0.5rem; 
+            font-size: 1.25rem; 
+        }
+        
+        .badges-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .chemical-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--bg-color);
+            color: var(--primary-color);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+        }
+
+        .ete-step { 
+            border-left-color: var(--success-color); 
+        }
+
+        .ete-step .chem-step-number { 
+            color: var(--success-color); 
+        }
+
+        .ete-step .chemical-badge { 
+            color: var(--success-color); 
+            border-color: rgba(16, 185, 129, 0.3); 
+        }
+
+        /* 
+        ==========================================================================
+        9. RODAPÉ E RESPONSIVIDADE
+        ========================================================================== 
+        */
+        footer {
+            background: var(--card-bg);
+            color: var(--text-color);
+            text-align: center;
+            padding: 2.5rem;
+            margin-top: 5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 992px) {
+            .hero-section { 
+                flex-direction: column; 
+                padding: 2rem; 
+            }
+            .header-container { 
+                flex-direction: column; 
+                gap: 1rem; 
+            }
+            .nav-tabs { 
+                flex-wrap: wrap; 
+                justify-content: center; 
+            }
+            .video-grid { 
+                grid-template-columns: 1fr; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABEÇALHO -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <i class="fa-solid fa-water"></i> Água, cada gota conta
+            </div>
+            <nav>
+                <ul class="nav-tabs">
+                    <li>
+                        <button class="tab-btn active" data-target="intro">
+                            <i class="fa-solid fa-book-open"></i> Introdução
+                        </button>
+                    </li>
+                    <li>
+                        <button class="tab-btn" data-target="math">
+                            <i class="fa-solid fa-chart-pie"></i> Matemática
+                        </button>
+                    </li>
+                    <li>
+                        <button class="tab-btn" data-target="bio">
+                            <i class="fa-solid fa-leaf"></i> Biologia
+                        </button>
+                    </li>
+                    <li>
+                        <button class="tab-btn" data-target="chem">
+                            <i class="fa-solid fa-flask"></i> Química
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+            <button class="theme-toggle" id="theme-btn" aria-label="Alternar Tema">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <!-- ==========================================
+             ABA 1: INTRODUÇÃO
+             ========================================== -->
+        <section id="intro" class="tab-content active">
+            <div class="section-header">
+                <h2>O Ciclo da Conscientização Hídrica</h2>
+                <p>Uma visão integrada e multidisciplinar sobre a gestão, preservação e tratamento do recurso mais vital do nosso planeta.</p>
+            </div>
+            
+            <div class="hero-section">
+                <div class="hero-text">
+                    <h3>A Gênese e o Destino da Água</h3>
+                    <p>A água é o alicerce absoluto de toda a vida na Terra. Apesar de o nosso planeta ser carinhosamente chamado de "Planeta Azul" devido à vasta cobertura oceânica que abrange cerca de 71% de sua superfície, a realidade da disponibilidade hídrica é muito mais frágil do que aparenta. Desse volume colossal, <strong>apenas 2,5% constitui água doce</strong>. Piorando o cenário, a maior parte dessa ínfima porcentagem está inacessível, congelada nos polos ou presa em profundos aquíferos subterrâneos. Sobra menos de 1% para sustentar a biodiversidade continental, a agricultura, a indústria e as complexas sociedades humanas.</p>
+                    
+                    <p>Enfrentamos hoje uma tríplice crise hídrica: <strong>escassez, poluição e má distribuição</strong>. As mudanças climáticas têm alterado drasticamente o regime de chuvas, provocando secas severas em regiões outrora férteis e enchentes devastadoras em outras. Paralelamente, o crescimento populacional desenfreado e o modelo de consumo linear esgotam bacias hidrográficas em uma velocidade superior à capacidade de recarga natural da Terra.</p>
+                    
+                    <p>O portal <strong>Água, cada gota conta</strong> nasce da urgência de educar e instrumentalizar a sociedade para reverter esse quadro. Entendemos que o problema não pode ser resolvido através de uma única ótica. Por isso, este projeto foi rigorosamente desenhado para cruzar disciplinas fundamentais. Acreditamos que somente unindo a precisão analítica dos números, a sabedoria dos ciclos naturais e o poder transformador da tecnologia seremos capazes de forjar um futuro sustentável.</p>
+
+                    <div class="info-panel">
+                        <h4><i class="fa-solid fa-compass"></i> O que você encontrará neste portal?</h4>
+                        <p style="margin-top: 10px; margin-bottom: 0;">Navegue pelas abas acima para explorar <strong>Matemática</strong> (análise profunda de gráficos e estatísticas reais de consumo indireto e direto), <strong>Biologia</strong> (ações comportamentais e ecológicas detalhadas para preservação sistêmica) e <strong>Química</strong> (os bastidores científicos do tratamento da água e do esgoto em estações de última geração, de forma altamente visual).</p>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="https://images.unsplash.com/photo-1501696461415-6bd6660c6742?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Água limpa e cristalina">
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             ABA 2: MATEMÁTICA
+             ========================================== -->
+        <section id="math" class="tab-content">
+            <div class="section-header">
+                <h2>Matemática e Estatística do Consumo</h2>
+                <p>Análise detalhada de dados extraídos do documento "Mapeamento do uso direto e uso indireto da água". Cada gráfico expõe uma realidade que exige intervenção imediata e inteligente.</p>
+            </div>
+
+            <div class="grid-container">
+                <!-- Tópico 1 -->
+                <div class="chart-card">
+                    <div class="chart-container"><canvas id="chart1"></canvas></div>
+                    <div class="chart-info">
+                        <h4>1. Duração Média do Banho Diário</h4>
+                        <p>A distribuição estatística do tempo de banho reflete um padrão comportamental de alto gasto hídrico. Os dados apontam que a maior fatia da população avaliada (33%) demora entre 5 e 10 minutos. No entanto, somando as fatias de 10 a 15 minutos (25,7%) e mais de 15 minutos (10,1%), percebe-se que mais de 35% das pessoas extrapolam gravemente o tempo ideal, configurando um uso direto insustentável.</p>
+                        <div class="solution-box">
+                            <strong><i class="fa-solid fa-calculator"></i> Análise e Solução Matemática:</strong><br>
+                            Um chuveiro elétrico comum consome aproximadamente 9 litros de água por minuto. Se um indivíduo reduz seu banho de 15 minutos para os 5 minutos recomendados pela OMS, ele economiza 10 minutos (90 litros) por banho. Em uma família de 4 pessoas, isso representa uma economia mensal de cerca de 10.800 litros. A solução prática envolve o uso de temporizadores de banho (softwares simples de contagem regressiva) e a substituição por chuveiros com arejadores embutidos, que misturam ar à água para manter a pressão reduzindo a vazão em até 50%.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tópico 2 -->
+                <div class="chart-card">
+                    <div class="chart-container"><canvas id="chart2"></canvas></div>
+                    <div class="chart-info">
+                        <h4>2. O Gasto Oculto na Escovação</h4>
+                        <p>O ato de escovar os dentes ou se ensaboar revela contrastes. A maioria (60,6%) afirma fechar a torneira de forma consistente, o que é um dado positivo. Contudo, 25,7% o fazem apenas "às vezes" e 13,8% declaram categoricamente que deixam a água escorrer de forma ininterrupta. Esse pequeno percentual, quando projetado para a população de uma cidade, resulta em desperdícios da ordem de milhões de litros diários.</p>
+                        <div class="solution-box">
+                            <strong><i class="fa-solid fa-calculator"></i> Análise e Solução Matemática:</strong><br>
+                            Uma torneira meio aberta desperdiça cerca de 12 litros de água a cada escovação. Considerando 3 escovações diárias, uma única pessoa joga pelo ralo 36 litros de água limpa e tratada por dia. Para mitigar esse erro, a engenharia sugere a instalação de torneiras com fechamento automático (temporizadas ou por aproximação infravermelha) em ambientes coletivos e escolares, eliminando o fator de erro humano do cálculo de desperdício.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tópico 3 -->
+                <div class="chart-card">
+                    <div class="chart-container"><canvas id="chart3"></canvas></div>
+                    <div class="chart-info">
+                        <h4>3. A Pesada Pegada Hídrica Bovina</h4>
+                        <p>A frequência do consumo de carne bovina impacta brutalmente os recursos hídricos devido ao conceito de "água virtual" (ou uso indireto). O mapeamento mostra que a dieta predominante inclui carne bovina 1 a 2 vezes na semana (40,4%) ou 3 a 4 vezes (28,4%), enquanto impressionantes 12,8% a consomem diariamente. Apenas 18,3% raramente ou nunca consomem.</p>
+                        <div class="solution-box">
+                            <strong><i class="fa-solid fa-calculator"></i> Análise e Solução Matemática:</strong><br>
+                            Para produzir 1 kg de carne bovina, são necessários, em média, absurdos 15.400 litros de água (água utilizada no cultivo da ração, na hidratação do animal ao longo de anos e no abatimento). Ao substituir 1 kg de carne bovina por 1 kg de frango (que consome cerca de 4.300 litros) ou vegetais, a economia indireta ultrapassa 11.000 litros. A aplicação de uma matriz de substituição nutricional gradual (reduzindo apenas 2 dias de consumo semanal) poderia aliviar drasticamente o estresse hídrico das bacias rurais.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tópico 4 -->
+                <div class="chart-card">
+                    <div class="chart-container"><canvas id="chart4"></canvas></div>
+                    <div class="chart-info">
+                        <h4>4. O Impacto Hídrico do Vestuário</h4>
+                        <p>A "Fast Fashion" é uma das indústrias mais sedentas do mundo. No levantamento sobre aquisição de novas peças de algodão, quase metade (47,7%) adquire de 2 a 5 peças por semestre, e 30,3% superam 5 peças. O algodão, matéria-prima predominante, exige enormes volumes de água doce para ser cultivado e processado industrialmente (tingimento e lavagem).</p>
+                        <div class="solution-box">
+                            <strong><i class="fa-solid fa-calculator"></i> Análise e Solução Matemática:</strong><br>
+                            Uma única camiseta de algodão de 250 gramas necessita de cerca de 2.700 litros de água para ser fabricada. Um indivíduo que compra 6 camisas novas por semestre está consumindo indiretamente 16.200 litros de água (o equivalente ao que ele próprio deveria beber ao longo de 15 anos). Soluções matemáticas para a indústria envolvem a otimização linear da cadeia de suprimentos e, para o consumidor, a adoção da economia circular (compra em brechós), zerando a adição hídrica da produção têxtil.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tópico 5 -->
+                <div class="chart-card">
+                    <div class="chart-container"><canvas id="chart5"></canvas></div>
+                    <div class="chart-info">
+                        <h4>5. Descarte de Óleo e a Contaminação</h4>
+                        <p>O descarte de resíduos domiciliares é um termômetro da educação ambiental. Enquanto 46,8% utilizam pontos de coleta seletiva para restos de óleo e medicamentos, alarmantes 33,9% jogam no lixo comum e 19,3% despejam diretamente no ralo da pia ou vaso sanitário. Este último grupo, embora seja a minoria, causa um dano proporcionalmente catastrófico ao ecossistema aquático e à infraestrutura de saneamento.</p>
+                        <div class="solution-box">
+                            <strong><i class="fa-solid fa-calculator"></i> Análise e Solução Matemática:</strong><br>
+                            Sabe-se que 1 litro de óleo de cozinha tem a capacidade química de poluir e inviabilizar até 25.000 litros de água limpa. O óleo cria uma película na superfície de rios e lagos que impede as trocas gasosas, asfixiando a biota aquática. Além disso, nas tubulações urbanas, o óleo solidifica, gerando entupimentos severos. A equação de custo-benefício governamental exige campanhas de logística reversa, transformando esse óleo em biodiesel ou sabão de forma rentável.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tópico 6 -->
+                <div class="chart-card">
+                    <div class="chart-container"><canvas id="chart6"></canvas></div>
+                    <div class="chart-info">
+                        <h4>6. Percepção do Maior Consumidor</h4>
+                        <p>Quando questionados sobre quem mais consome água doce no Brasil, 55% dos entrevistados apontaram corretamente a Agropecuária. Todavia, ainda existe uma distorção cognitiva significativa, visto que 25,7% acreditam que o uso doméstico lidera o ranking. Esse dado mostra que as campanhas tradicionais culpam excessivamente o cidadão, ofuscando a responsabilidade dos grandes setores produtivos.</p>
+                        <div class="solution-box">
+                            <strong><i class="fa-solid fa-calculator"></i> Análise e Solução Matemática:</strong><br>
+                            Estatisticamente, a irrigação agrícola e o abastecimento animal respondem por cerca de 70% a 72% do consumo de água doce mundial (e brasileiro), seguidos pela indústria (20%) e residências (10%). Para equacionar esse gasto massivo, a engenharia agronômica deve substituir a irrigação por inundação ou aspersão (que perdem água por evaporação) por sistemas algorítmicos de gotejamento subterrâneo guiados por dados de evapotranspiração via satélite.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tópico 7 -->
+                <div class="chart-card">
+                    <div class="chart-container"><canvas id="chart7"></canvas></div>
+                    <div class="chart-info">
+                        <h4>7. O Paradoxo da Exportação de Água Virtual</h4>
+                        <p>O conceito de Água Virtual é fundamental para a geopolítica moderna. A pesquisa indica que 65,1% compreendem que, ao exportar toneladas de soja, milho e carne, o Brasil está, na verdade, exportando bilhões de litros de sua própria água doce embutida nesses produtos. Contudo, 34,9% ainda desconhecem esse fenômeno comercial e ambiental profundo.</p>
+                        <div class="solution-box">
+                            <strong><i class="fa-solid fa-calculator"></i> Análise e Solução Matemática:</strong><br>
+                            O Balanço Hídrico Comercial mede o fluxo de água virtual entre nações. Países áridos no Oriente Médio compram grãos brasileiros não apenas pela terra fértil, mas porque não possuem água doce para cultivar. Matematicamente, o Brasil deve calcular rigorosamente o valor agregado (dólar por m³ de água gasta) de suas exportações. Sem a adição de tecnologia industrial, vender commodities cruas pode significar o esgotamento hídrico não remunerado de bacias inteiras como o Cerrado.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tópico 8 -->
+                <div class="chart-card">
+                    <div class="chart-container"><canvas id="chart8"></canvas></div>
+                    <div class="chart-info">
+                        <h4>8. A Sangria Oculta: Perdas de Distribuição</h4>
+                        <p>Este é, sem dúvida, o problema logístico mais grave do Brasil urbano. A pesquisa mostra uma população perfeitamente dividida: 49,5% não sabiam que quase 40% da água potável, tratada a altos custos químicos e energéticos, é perdida em tubulações furadas ou fraudes (gatos) antes mesmo de chegar aos hidrômetros das residências.</p>
+                        <div class="solution-box">
+                            <strong><i class="fa-solid fa-calculator"></i> Análise e Solução Matemática:</strong><br>
+                            Produzir 100 litros de água e cobrar apenas por 60 litros gera um déficit tarifário que impede investimentos em infraestrutura. A solução para este cálculo envolve a aplicação da Teoria de Grafos e equações de Fluidodinâmica. Sensores acústicos de IoT (Internet das Coisas) devem ser instalados na rede de distribuição para traçar modelos matemáticos de queda de pressão, identificando milimetricamente rupturas subterrâneas sem a necessidade de escavações exploratórias cegas.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NOVA SEÇÃO ADICIONADA: REFLEXÃO E 8 IMAGENS RELACIONADAS AOS TÓPICOS -->
+            <div class="reflection-container">
+                <h3 style="color: var(--primary-color); font-size: 2rem; margin-bottom: 1.5rem; text-align: center;">Reflexão Integrada sobre os 8 Indicadores</h3>
+                <p style="text-align: justify; margin-bottom: 1rem; line-height: 1.8; font-size: 1.1rem;">
+                    A síntese e análise contínua dos 8 tópicos estatísticos apresentados revelam que a crise hídrica não é moldada por um único vilão, mas sim por uma complexa teia de interdependências. Os dados matemáticos comprovam que o desperdício ocorre em múltiplas frentes simultâneas: no conforto invisível do tempo de banho, na ingenuidade da torneira aberta, na alta demanda hídrica para a confecção do nosso vestuário e na nossa dieta baseada em altíssima ingestão de proteína animal.
+                </p>
+                <p style="text-align: justify; margin-bottom: 2rem; line-height: 1.8; font-size: 1.1rem;">
+                    Além dos impactos individuais, os gráficos iluminam o imenso peso sistêmico. Quando 40% da água potável é perdida em vazamentos estruturais, e a exportação massiva de commodities envia "água virtual" para o exterior, torna-se matematicamente claro que a solução exige não apenas educação ambiental caseira, mas pesados investimentos em engenharia, manutenção de infraestrutura e otimização das práticas agropecuárias. Abaixo, ilustramos a essência visual dos impactos causados por cada um dos 8 tópicos discutidos.
+                </p>
+
+                <div class="custom-gallery">
+                    <div class="custom-gallery-item">
+                        <img class="custom-gallery-img" src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=500&q=80" alt="Tópico 1 - Chuveiro">
+                        <div class="custom-gallery-caption">Tópico 1: O gasto direto e contínuo no chuveiro.</div>
+                    </div>
+                    <div class="custom-gallery-item">
+                        <img class="custom-gallery-img" src="https://static.ndmais.com.br/2025/05/torneira-pingando-1300x867.jpg" alt="Tópico 2 - Torneira">
+                        <div class="custom-gallery-caption">Tópico 2: Ações diárias invisíveis na pia.</div>
+                    </div>
+                    <div class="custom-gallery-item">
+                        <img class="custom-gallery-img" src="https://images.unsplash.com/photo-1546445317-29f4545e9d53?auto=format&fit=crop&w=500&q=80" alt="Tópico 3 - Pecuária">
+                        <div class="custom-gallery-caption">Tópico 3: A gigantesca pegada hídrica da carne.</div>
+                    </div>
+                    <div class="custom-gallery-item">
+                        <img class="custom-gallery-img" src="https://images.unsplash.com/photo-1589810635657-232948472d98?auto=format&fit=crop&w=500&q=80" alt="Tópico 4 - Vestuário algodão">
+                        <div class="custom-gallery-caption">Tópico 4: A sede da indústria da moda.</div>
+                    </div>
+                    <div class="custom-gallery-item">
+                        <img class="custom-gallery-img" src="https://s3-sa-east-1.amazonaws.com/sindiconet-files/Conteudos/7932/oleo_956_667.jpg?token=9caf8131-35f6-40f9-81ba-91ae0313cdf7" alt="Tópico 5 - Poluição Óleo">
+                        <div class="custom-gallery-caption">Tópico 5: Contaminação química por descarte.</div>
+                    </div>
+                    <div class="custom-gallery-item">
+                        <img class="custom-gallery-img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnuR8n7KXM0idBGUdwDfm7A-e5QGAZiiKAb-Q5gyvPBZsC7f3YHoLEOJ4&s=10" alt="Tópico 6 - Agricultura">
+                        <div class="custom-gallery-caption">Tópico 6: A irrigação como consumidora primária.</div>
+                    </div>
+                    <div class="custom-gallery-item">
+                        <img class="custom-gallery-img" src="https://images.unsplash.com/photo-1494412552100-42e4e7a74ec6?auto=format&fit=crop&w=500&q=80" alt="Tópico 7 - Exportação Grãos">
+                        <div class="custom-gallery-caption">Tópico 7: Navios exportando nossa água virtual.</div>
+                    </div>
+                    <div class="custom-gallery-item">
+                        <img class="custom-gallery-img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDBAzRXQaxh10gudBuP7wUdOnX1Y8426OxifMmVvESXDKKBMLHPJKkLk4&s=10" alt="Tópico 8 - Tubulação vazando">
+                        <div class="custom-gallery-caption">Tópico 8: A sangria física nas redes de distribuição.</div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ==========================================
+             ABA 3: BIOLOGIA
+             ========================================== -->
+        <section id="bio" class="tab-content">
+            <div class="section-header">
+                <h2>Ações Biológicas, Ecológicas e Sustentáveis</h2>
+                <p>Preservar a água requer compreender sua função biológica no planeta. Abaixo, detalhamos soluções vitais, embasadas na dinâmica dos ecossistemas, que promovem uma verdadeira revolução sustentável.</p>
+            </div>
+
+            <!-- NOVA GALERIA BIOLÓGICA (FOTOS REAIS SOBRE A ÁGUA) -->
+            <div class="custom-gallery" style="margin-top: 0; margin-bottom: 3rem;">
+                <div class="custom-gallery-item">
+                    <img class="custom-gallery-img" src="https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?auto=format&fit=crop&w=600&q=80" alt="Ecossistema natural de rio">
+                    <div class="custom-gallery-caption">Ecossistemas lóticos saudáveis são vitais para a purificação biológica.</div>
+                </div>
+                <div class="custom-gallery-item">
+                    <img class="custom-gallery-img" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80" alt="Nascente preservada">
+                    <div class="custom-gallery-caption">Mananciais e nascentes protegidas por matas ciliares nativas.</div>
+                </div>
+                <div class="custom-gallery-item">
+                    <img class="custom-gallery-img" src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=600&q=80" alt="Gotas de orvalho em folhas">
+                    <div class="custom-gallery-caption">A evapotranspiração mantém o ciclo hidrológico continental em equilíbrio.</div>
+                </div>
+            </div>
+
+            <div class="grid-container">
+                <!-- Card 1 -->
+                <div class="card bio-card">
+                    <i class="fa-solid fa-seedling bio-icon"></i>
+                    <h4>Xeropaisagismo e Flora Nativa</h4>
+                    <p>O paisagismo tradicional muitas vezes impõe plantas exóticas europeias que exigem enormes quantidades de irrigação em climas tropicais. O xeropaisagismo subverte isso focando no plantio de espécies endêmicas adaptadas ao estresse hídrico local, como suculentas e cactos, integrando o jardim ao bioma.</p>
+                    <ul>
+                        <li><strong>Retenção Natural:</strong> Plantas nativas desenvolvem raízes profundas que buscam água nos lençóis sem necessidade de rega artificial superficial constante.</li>
+                        <li><strong>Preservação da Fauna:</strong> Fornecem néctar, polem e abrigo específicos para insetos polinizadores (como abelhas nativas) e pássaros locais.</li>
+                        <li><strong>Mulching (Palhada):</strong> A técnica de cobrir o solo com cascas de árvores e folhas secas mantém a umidade da terra por semanas, inibindo a evaporação direta causada pelo sol.</li>
+                    </ul>
+                    <div class="bio-impact">Impacto: Redução de até 60% no consumo de água de irrigação externa em residências.</div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="card bio-card">
+                    <i class="fa-solid fa-cloud-rain bio-icon"></i>
+                    <h4>Manejo Pluvial e Cisternas Modernas</h4>
+                    <p>A chuva é uma fonte biológica pura que, nas cidades asfaltadas, se transforma em problema (enchentes). A instalação de sistemas de captação pluvial em telhados redireciona essa água, passando por um filtro mecânico simples, armazenando-a em cisternas subterrâneas ou aparentes.</p>
+                    <ul>
+                        <li><strong>Uso Secundário Perfeito:</strong> Sendo não potável, é ideal para lavagem de áreas externas, maquinários, frotas veiculares e irrigação pesada de campos agrícolas.</li>
+                        <li><strong>Descargas Ecológicas:</strong> Pode ser acoplada diretamente à tubulação dos vasos sanitários da casa, substituindo completamente o uso de água potável (tratada com cloro) para varrer dejetos.</li>
+                        <li><strong>Mitigação de Enchentes:</strong> Ao reter a água na propriedade, diminui-se o pico de escoamento rápido que sobrecarrega as galerias pluviais das prefeituras.</li>
+                    </ul>
+                    <div class="bio-impact">Impacto: Protege bacias urbanas e diminui o escoamento superficial de poluentes químicos para os rios.</div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="card bio-card">
+                    <i class="fa-solid fa-recycle bio-icon"></i>
+                    <h4>Reúso Dinâmico de Águas Cinzas</h4>
+                    <p>Águas cinzas correspondem ao efluente residual não industrial gerado a partir de processos domésticos como lavagem de louça, banhos e lavanderia. Diferente das "águas negras" (oriundas do vaso sanitário, contendo matéria fecal perigosa), as cinzas possuem baixo risco microbiológico.</p>
+                    <ul>
+                        <li><strong>Wetlands Construídos (Filtros Biológicos):</strong> Um sistema natural fantástico onde a água cinza passa por raízes de plantas aquáticas específicas (macrófitas) que absorvem os nutrientes (sabão) e purificam a água biologicamente.</li>
+                        <li><strong>Ciclo da Máquina de Lavar:</strong> O redirecionamento simples da mangueira de descarte da máquina para baldes grandes gera água perfeitamente útil para lavar garagens e calçadas.</li>
+                        <li><strong>Alívio nas ETEs:</strong> Desviar águas cinzas diminui drasticamente o volume de líquido que as Estações de Tratamento de Esgoto precisam processar.</li>
+                    </ul>
+                    <div class="bio-impact">Impacto: O reaproveitamento cíclico eleva a eficiência energética das cidades e recicla fosfatos presentes em sabões.</div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="card bio-card">
+                    <i class="fa-solid fa-bug bio-icon"></i>
+                    <h4>Agricultura Sem Veneno: Proteção de Aquíferos</h4>
+                    <p>A relação entre a água que bebemos e a forma como plantamos é direta. O uso indiscriminado de fertilizantes sintéticos e defensivos agrícolas (agrotóxicos) gera um fenômeno chamado lixiviação. Com a chuva, esses químicos tóxicos afundam no solo e envenenam silenciosamente os lençóis freáticos.</p>
+                    <ul>
+                        <li><strong>Controle Biológico de Pragas:</strong> Uso de predadores naturais (como joaninhas para devorar pulgões) ou fungos entomopatogênicos em vez de pulverizar veneno sintético que contamina bacias inteiras.</li>
+                        <li><strong>Adubação Verde e Compostagem:</strong> Enriquecer o solo com matéria orgânica biológica (restos de vegetais) melhora a estrutura da terra, transformando-a em uma esponja que retém água limpa.</li>
+                        <li><strong>Rotação de Culturas:</strong> Alternar o tipo de plantio evita a exaustão de nutrientes específicos e quebra o ciclo de pragas dependentes de monoculturas.</li>
+                    </ul>
+                    <div class="bio-impact">Impacto: Preservação da pureza química dos rios subterrâneos (aquíferos) que abastecem poços artesianos.</div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="card bio-card">
+                    <i class="fa-solid fa-tree bio-icon"></i>
+                    <h4>Reflorestamento de Matas Ciliares</h4>
+                    <p>As Matas Ciliares recebem esse nome porque funcionam exatamente como os "cílios" dos nossos olhos, protegendo o globo ocular. Elas são faixas de vegetação densa que margeiam cursos d'água, lagos e nascentes. O desmatamento dessas áreas é a sentença de morte de um rio.</p>
+                    <ul>
+                        <li><strong>Prevenção do Assoreamento:</strong> A teia complexa de raízes segura as margens do rio. Sem elas, a terra desmorona, enchendo o leito do rio de lama, tornando-o raso até que ele simplesmente seque e morra.</li>
+                        <li><strong>Filtro Vivo Anti-Poluição:</strong> A mata absorve parte dos agrotóxicos e sedimentos vindos das lavouras vizinhas antes que cheguem à água.</li>
+                        <li><strong>Regulação Climática e Sombra:</strong> A copa das árvores diminui a incidência solar direta sobre a água, regulando a temperatura ideal para os peixes e reduzindo severamente a taxa de evaporação.</li>
+                    </ul>
+                    <div class="bio-impact">Impacto: Restauração do microclima e garantia de longevidade perene para nascentes e bacias hidrográficas.</div>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="card bio-card">
+                    <i class="fa-solid fa-plate-wheat bio-icon"></i>
+                    <h4>Adoção de Dieta Flexitariana (Baixo Impacto)</h4>
+                    <p>A ecologia humana passa pelo que colocamos no prato. A produção pecuária intensiva exige desmatamento para pasto, alto consumo de grãos (milho/soja) que necessitam de irrigação extrema e hidratação de rebanhos monumentais, elevando a pegada hídrica global a níveis críticos.</p>
+                    <ul>
+                        <li><strong>Transição Proteica:</strong> Introduzir mais proteínas vegetais (feijão, lentilha, ervilha, grão-de-bico) que são altamente nutritivas, baratas e exigem uma fração minúscula de água para crescer comparado a carne vermelha.</li>
+                        <li><strong>Segunda Sem Carne:</strong> Movimento mundial que propõe tirar a carne do prato apenas um dia por semana. É uma mudança biológica sustentável que não exige radicalismo, mas gera números globais massivos de preservação.</li>
+                        <li><strong>Apoio à Agricultura Familiar:</strong> Comprar hortaliças e frutas de produtores locais diminui a distância de transporte (menos poluição) e apoia cultivos de menor escala e menor agressão ao ecossistema.</li>
+                    </ul>
+                    <div class="bio-impact">Impacto: Alivia imediatamente a pressão massiva das corporações agrícolas sobre os grandes reservatórios hídricos do país.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             ABA 4: QUÍMICA 
+             ========================================== -->
+        <section id="chem" class="tab-content">
+            <div class="section-header">
+                <h2>Engenharia Química: Tratamento e Purificação</h2>
+                <p>Nesta seção visual, explore os bastidores práticos e reativos que transformam água bruta da natureza em água segura e como a tecnologia reverte os danos do esgoto. Assista aos vídeos e siga as etapas físico-químicas abaixo.</p>
+            </div>
+
+            <!-- VÍDEOS INTERATIVOS (MANUAL DO MUNDO) -->
+            <div class="video-grid">
+                <!-- Vídeo 1: ETA -->
+                <div class="video-wrapper">
+                    <h4><i class="fa-solid fa-faucet-drip"></i> Como funciona uma ETA (Água)</h4>
+                    <p style="margin-bottom: 15px; font-size: 0.95em; color: var(--text-color); opacity: 0.8;">
+                        <strong>Resumo do processo:</strong> A água bruta passa por <strong>coagulação e floculação</strong> (adição de produtos químicos para unir a sujeira em flocos), <strong>decantação</strong> (onde os flocos pesados afundam), <strong>filtração</strong> (passagem por camadas de areia e carvão) e, finalmente, <strong>desinfecção</strong> (adição de cloro para eliminar microrganismos).
+                    </p>
+                    <div class="video-container">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/cWBSF0VyiMI?si=8IyaBhdCQVoeqFyI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                    </div>
+                </div>
+                
+                <!-- Vídeo 2: ETE -->
+                <div class="video-wrapper">
+                    <h4 style="color: var(--success-color);"><i class="fa-solid fa-water-ladder"></i> Como funciona uma ETE (Esgoto)</h4>
+                    <p style="margin-bottom: 15px; font-size: 0.95em; color: var(--text-color); opacity: 0.8;">
+                        <strong>Resumo do processo:</strong> O esgoto passa pelo <strong>gradeamento</strong> (para reter o lixo sólido) e pela <strong>decantação primária</strong>. A etapa química e biológica principal ocorre na <strong>aeração</strong>, onde bactérias consomem a matéria orgânica. Após a <strong>decantação secundária</strong> para separar o lodo, a água tratada e limpa é devolvida à natureza.
+                    </p>
+                    <div class="video-container">
+                     <iframe width="560" height="315" src="https://www.youtube.com/embed/IAyu0JMb_1U?si=n5p90sRcjj85q2IP" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NOVA GALERIA QUÍMICA (FOTOS DE ETA e ETE) -->
+            <div class="custom-gallery" style="margin-bottom: 4rem;">
+                <div class="custom-gallery-item">
+                    <img class="custom-gallery-img" src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80" alt="Tanques Decantação ETA">
+                    <div class="custom-gallery-caption">ETA: Tanques de decantação em grande escala para clarificação da água potável.</div>
+                </div>
+                <div class="custom-gallery-item">
+                    <img class="custom-gallery-img" src="https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=600&q=80" alt="Tanques Aeração ETE">
+                    <div class="custom-gallery-caption">ETE: Reatores biológicos de aeração e processos de lodo ativado.</div>
+                </div>
+                <div class="custom-gallery-item">
+                    <img class="custom-gallery-img" src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=600&q=80" alt="Filtração ETA">
+                    <div class="custom-gallery-caption">ETA: Baterias de filtração industrial com areia e antracito.</div>
+                </div>
+                <div class="custom-gallery-item">
+                    <img class="custom-gallery-img" src="https://aguasclarasengenharia.com.br/wp-content/uploads/2026/01/Cloracao-no-Tratamento-de-Agua-Vantagens-e-Cuidados.jpg" alt="Laboratório de análise de água">
+                    <div class="custom-gallery-caption">Controle laboratorial rígido: medição contínua de pH, DBO e cloro residual livre.</div>
+                </div>
+            </div>
+
+            <div class="grid-container">
+                <!-- ETA (Água) -->
+                <div>
+                    <h3 style="color: var(--primary-color); margin-bottom: 2rem; text-align: center; font-size: 1.8rem; border-bottom: 2px dashed var(--border-color); padding-bottom: 10px;">
+                        Fluxograma da ETA
+                    </h3>
+                    <div class="chem-process">
+                        <div class="chem-step">
+                            <div class="chem-step-number">01</div>
+                            <div class="chem-step-info">
+                                <h4>Captação e Macrófitas</h4>
+                                <div class="badges-container">
+                                    <span class="chemical-badge"><i class="fa-solid fa-filter"></i> Barreiras Físicas (Grades)</span>
+                                    <span class="chemical-badge"><i class="fa-solid fa-vial"></i> Bombeamento (Bruta)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chem-step">
+                            <div class="chem-step-number">02</div>
+                            <div class="chem-step-info">
+                                <h4>Coagulação Química</h4>
+                                <div class="badges-container">
+                                    <span class="chemical-badge">Sulfato de Alumínio: Al<sub>2</sub>(SO<sub>4</sub>)<sub>3</sub></span>
+                                    <span class="chemical-badge">Cloreto Férrico: FeCl<sub>3</sub></span>
+                                    <span class="chemical-badge">Aglutinação de Sujeira</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chem-step">
+                            <div class="chem-step-number">03</div>
+                            <div class="chem-step-info">
+                                <h4>Floculação</h4>
+                                <div class="badges-container">
+                                    <span class="chemical-badge"><i class="fa-solid fa-arrows-spin"></i> Agitação Mecânica</span>
+                                    <span class="chemical-badge">Polímeros Sintéticos</span>
+                                    <span class="chemical-badge">Formação de Flocos Pesados</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chem-step">
+                            <div class="chem-step-number">04</div>
+                            <div class="chem-step-info">
+                                <h4>Decantação</h4>
+                                <div class="badges-container">
+                                    <span class="chemical-badge"><i class="fa-solid fa-arrow-down-wide-short"></i> Ação da Gravidade</span>
+                                    <span class="chemical-badge">Lodo Sedimentado ao Fundo</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chem-step">
+                            <div class="chem-step-number">05</div>
+                            <div class="chem-step-info">
+                                <h4>Filtração Múltipla</h4>
+                                <div class="badges-container">
+                                    <span class="chemical-badge">Antracito (Carvão)</span>
+                                    <span class="chemical-badge">Areia Fina</span>
+                                    <span class="chemical-badge">Cascalho Suporte</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chem-step">
+                            <div class="chem-step-number">06</div>
+                            <div class="chem-step-info">
+                                <h4>Desinfecção, pH e Flúor</h4>
+                                <div class="badges-container">
+                                    <span class="chemical-badge">Gás Cloro: Cl<sub>2</sub> (Patógenos)</span>
+                                    <span class="chemical-badge">Ácido Fluossilícico: H<sub>2</sub>SiF<sub>6</sub> (Cáries)</span>
+                                    <span class="chemical-badge">Cal: CaO (Correção de pH / Tubulações)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ETE (Esgoto) -->
+                <div>
+                    <h3 style="color: var(--success-color); margin-bottom: 2rem; text-align: center; font-size: 1.8rem; border-bottom: 2px dashed rgba(16, 185, 129, 0.3); padding-bottom: 10px;">
+                        Fluxograma da ETE
+                    </h3>
+                    <div class="chem-process">
+                        <div class="chem-step ete-step">
+                            <div class="chem-step-number">01</div>
+                            <div class="chem-step-info">
+                                <h4>Tratamento Preliminar</h4>
+                                <div class="badges-container">
+                                    <span class="chemical-badge"><i class="fa-solid fa-trash-can"></i> Gradeamento Grosso/Fino</span>
+                                    <span class="chemical-badge"><i class="fa-solid fa-mound"></i> Caixas de Areia (Desarenação)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chem-step ete-step">
+                            <div class="chem-step-number">02</div>
+                            <div class="chem-step-info">
+                                <h4>Decantação Primária</h4>
+                                <div class="badges-container">
+                                    <span class="chemical-badge"><i class="fa-solid fa-arrow-down"></i> Gravidade: Sólidos em Suspensão</span>
+                                    <span class="chemical-badge">Remoção de Gorduras Superiores</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chem-step ete-step">
+                            <div class="chem-step-number">03</div>
+                            <div class="chem-step-info">
+                                <h4>Reatores Biológicos (Aeração)</h4>
+                                <div class="badges-container">
+                                    <span class="chemical-badge">Injeção Constante: O<sub>2</sub></span>
+                                    <span class="chemical-badge"><i class="fa-solid fa-bacterium"></i> Bactérias Aeróbicas (Lodo Ativado)</span>
+                                    <span class="chemical-badge">Digestão de Matéria Orgânica</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chem-step ete-step">
+                            <div class="chem-step-number">04</div>
+                            <div class="chem-step-info">
+                                <h4>Decantação Secundária</h4>
+                                <div class="badges-container">
+                                    <span class="chemical-badge">Sedimentação do Lodo Biológico</span>
+                                    <span class="chemical-badge"><i class="fa-solid fa-recycle"></i> Recirculação de Lodo Ativo</span>
+                                    <span class="chemical-badge">Água Clarificada Resultante</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chem-step ete-step">
+                            <div class="chem-step-number">05</div>
+                            <div class="chem-step-info">
+                                <h4>Desinfecção e Lançamento</h4>
+                                <div class="badges-container">
+                                    <span class="chemical-badge"><i class="fa-solid fa-sun"></i> Radiação UV ou Cloração (Cl<sub>2</sub>)</span>
+                                    <span class="chemical-badge">Redução Drástica da DBO</span>
+                                    <span class="chemical-badge"><i class="fa-solid fa-water"></i> Lançamento Seguro no Corpo Hídrico (Rio)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer>
+        <div style="max-width: var(--container-width); margin: 0 auto;">
+            <h2 style="font-size: 1.8rem; margin-bottom: 15px; color: var(--primary-color);">Água, cada gota conta</h2>
+            <p style="font-size: 1.1rem;">Desenvolvido para transformar dados, química e biologia em conscientização.</p>
+            <p style="font-size: 0.9rem; margin-top: 20px; opacity: 0.7;">&copy; 2026 O Portal da Água. Dados matemáticos embasados em mapeamentos reais de consumo hídrico.</p>
+        </div>
+    </footer>
+
+    <!-- 
+    ==========================================
+    LÓGICA JAVASCRIPT
+    ==========================================
+    -->
+    <script>
+        // --- 1. LÓGICA DAS ABAS (TABS) ---
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+
+                btn.classList.add('active');
+                const target = btn.getAttribute('data-target');
+                document.getElementById(target).classList.add('active');
+
+                // Renderiza os gráficos apenas quando a aba Matemática for aberta 
+                if(target === 'math' && !window.chartsRendered) {
+                    renderCharts();
+                    window.chartsRendered = true;
+                }
+            });
+        });
+
+        // --- 2. LÓGICA DE DARK / LIGHT MODE ---
+        const themeBtn = document.getElementById('theme-btn');
+        const htmlEl = document.documentElement;
+        let chartInstances = [];
+
+        themeBtn.addEventListener('click', () => {
+            const currentTheme = htmlEl.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            htmlEl.setAttribute('data-theme', newTheme);
+            
+            if(newTheme === 'dark') {
+                themeBtn.innerHTML = '<i class="fa-solid fa-sun" style="color: #fbbf24;"></i>';
+                updateChartsColor('#f0f9ff', '#1e293b'); 
+            } else {
+                themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+                updateChartsColor('#0c4a6e', '#e2e8f0'); 
+            }
+        });
+
+        // --- 3. DADOS EXTRAÍDOS DO PDF (MAPEAMENTO) E CONFIGURAÇÃO CHART.JS ---
+        const renderCharts = () => {
+            Chart.defaults.font.family = "'Poppins', sans-serif";
+            const textColor = document.documentElement.getAttribute('data-theme') === 'dark' ? '#f0f9ff' : '#0c4a6e';
+            
+            const colors = { 
+                c1: '#0284c7', 
+                c2: '#38bdf8', 
+                c3: '#0ea5e9', 
+                c4: '#7dd3fc', 
+                c5: '#bae6fd', 
+                dark: '#0369a1', 
+                danger: '#ef4444' 
+            };
+
+            // Gráfico 1: Duração do Banho
+            chartInstances.push(new Chart(document.getElementById('chart1').getContext('2d'), {
+                type: 'pie',
+                data: {
+                    labels: [
+                        'Até 5 min', 
+                        '5 a 10 min', 
+                        '10 a 15 min', 
+                        'Mais de 15 min'
+                    ],
+                    datasets: [
+                        {
+                            data: [
+                                31.2, 
+                                33.0, 
+                                25.7, 
+                                10.1
+                            ],
+                            backgroundColor: [
+                                colors.c2, 
+                                colors.c1, 
+                                colors.dark, 
+                                colors.danger
+                            ],
+                            borderWidth: 1, 
+                            borderColor: '#ffffff'
+                        }
+                    ]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { 
+                            labels: { 
+                                color: textColor 
+                            } 
+                        } 
+                    } 
+                }
+            }));
+
+            // Gráfico 2: Fechar Torneira
+            chartInstances.push(new Chart(document.getElementById('chart2').getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: [
+                        'Sim, sempre', 
+                        'Às vezes', 
+                        'Não, deixo aberta'
+                    ],
+                    datasets: [
+                        {
+                            data: [
+                                60.6, 
+                                25.7, 
+                                13.8
+                            ],
+                            backgroundColor: [
+                                colors.c2, 
+                                '#f59e0b', 
+                                colors.danger
+                            ],
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { 
+                            labels: { 
+                                color: textColor 
+                            } 
+                        } 
+                    } 
+                }
+            }));
+
+            // Gráfico 3: Frequência Carne Bovina
+            chartInstances.push(new Chart(document.getElementById('chart3').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: [
+                        'Todos os dias', 
+                        '3 a 4 vezes', 
+                        '1 a 2 vezes', 
+                        'Raramente/Nunca'
+                    ],
+                    datasets: [
+                        {
+                            label: 'Respostas (%)',
+                            data: [
+                                12.8, 
+                                28.4, 
+                                40.4, 
+                                18.3
+                            ],
+                            backgroundColor: colors.c1,
+                            borderRadius: 5
+                        }
+                    ]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    scales: { 
+                        y: { 
+                            ticks: { 
+                                color: textColor 
+                            } 
+                        }, 
+                        x: { 
+                            ticks: { 
+                                color: textColor 
+                            } 
+                        } 
+                    },
+                    plugins: { 
+                        legend: { 
+                            display: false 
+                        } 
+                    } 
+                }
+            }));
+
+            // Gráfico 4: Compra de Roupas
+            chartInstances.push(new Chart(document.getElementById('chart4').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: [
+                        '0 a 1 peça', 
+                        '2 a 5 peças', 
+                        'Mais de 5 peças'
+                    ],
+                    datasets: [
+                        {
+                            label: 'Peças de Roupa (%)',
+                            data: [
+                                22.0, 
+                                47.7, 
+                                30.3
+                            ],
+                            backgroundColor: colors.c2,
+                            borderRadius: 5
+                        }
+                    ]
+                },
+                options: { 
+                    indexAxis: 'y', 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    scales: { 
+                        x: { 
+                            ticks: { 
+                                color: textColor 
+                            } 
+                        }, 
+                        y: { 
+                            ticks: { 
+                                color: textColor 
+                            } 
+                        } 
+                    },
+                    plugins: { 
+                        legend: { 
+                            display: false 
+                        } 
+                    }
+                }
+            }));
+
+            // Gráfico 5: Descarte Óleo
+            chartInstances.push(new Chart(document.getElementById('chart5').getContext('2d'), {
+                type: 'polarArea',
+                data: {
+                    labels: [
+                        'Ralo ou Vaso', 
+                        'Lixo Comum', 
+                        'Coleta Seletiva'
+                    ],
+                    datasets: [
+                        {
+                            data: [
+                                19.3, 
+                                33.9, 
+                                46.8
+                            ],
+                            backgroundColor: [
+                                colors.danger, 
+                                '#f59e0b', 
+                                '#10b981'
+                            ],
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    scales: { 
+                        r: { 
+                            ticks: { 
+                                display: false 
+                            } 
+                        } 
+                    }, 
+                    plugins: { 
+                        legend: { 
+                            labels: { 
+                                color: textColor 
+                            } 
+                        } 
+                    } 
+                }
+            }));
+
+            // Gráfico 6: Maior Consumidor de Água
+            chartInstances.push(new Chart(document.getElementById('chart6').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: [
+                        'Doméstico', 
+                        'Indústria', 
+                        'Agropecuária'
+                    ],
+                    datasets: [
+                        {
+                            label: 'Percepção (%)',
+                            data: [
+                                25.7, 
+                                19.3, 
+                                55.0
+                            ],
+                            backgroundColor: [
+                                colors.c2, 
+                                colors.c3, 
+                                colors.c1
+                            ],
+                            borderRadius: 5
+                        }
+                    ]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    scales: { 
+                        y: { 
+                            ticks: { 
+                                color: textColor 
+                            } 
+                        }, 
+                        x: { 
+                            ticks: { 
+                                color: textColor 
+                            } 
+                        } 
+                    },
+                    plugins: { 
+                        legend: { 
+                            display: false 
+                        } 
+                    }
+                }
+            }));
+
+            // Gráfico 7: Exportação Água Virtual
+            chartInstances.push(new Chart(document.getElementById('chart7').getContext('2d'), {
+                type: 'pie',
+                data: {
+                    labels: [
+                        'Sabiam (Sim)', 
+                        'Não Sabiam (Não)'
+                    ],
+                    datasets: [
+                        {
+                            data: [
+                                65.1, 
+                                34.9
+                            ],
+                            backgroundColor: [
+                                '#10b981', 
+                                colors.danger
+                            ],
+                            borderWidth: 1, 
+                            borderColor: '#ffffff'
+                        }
+                    ]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { 
+                            labels: { 
+                                color: textColor 
+                            } 
+                        } 
+                    } 
+                }
+            }));
+
+            // Gráfico 8: 40% Perdas Brasil
+            chartInstances.push(new Chart(document.getElementById('chart8').getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: [
+                        'Sabiam (Sim)', 
+                        'Não Sabiam (Não)'
+                    ],
+                    datasets: [
+                        {
+                            data: [
+                                49.5, 
+                                50.5
+                            ],
+                            backgroundColor: [
+                                colors.c2, 
+                                colors.dark
+                            ],
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { 
+                            labels: { 
+                                color: textColor 
+                            } 
+                        } 
+                    } 
+                }
+            }));
+        };
+
+        const updateChartsColor = (textColor, gridColor) => {
+            if(!window.chartsRendered) {
+                return;
+            }
+            
+            chartInstances.forEach(chart => {
+                if (chart.options.plugins.legend) { 
+                    chart.options.plugins.legend.labels.color = textColor; 
+                }
+                if (chart.options.scales) {
+                    if (chart.options.scales.x) {
+                        chart.options.scales.x.ticks.color = textColor;
+                    }
+                    if (chart.options.scales.y) {
+                        chart.options.scales.y.ticks.color = textColor;
+                    }
+                    if (chart.options.scales.r && chart.options.scales.r.pointLabels) { 
+                        chart.options.scales.r.pointLabels.color = textColor; 
+                    }
+                }
+                chart.update();
+            });
+        };
+    </script>
+</body>
+</html>
